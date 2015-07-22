@@ -154,7 +154,7 @@ class Email{
 		$elements = imap_mime_header_decode($string);
 		$res = "";
 		foreach($elements as $e){
-			if(isset($elements[0]->charset) && $elements[0]->charset!=null && $elements[0]->charset != "default"){
+			if(isset($e->charset) && $e->charset!=null && $e->charset != "default"){
 				$res .= iconv($e->charset, "UTF-8//TRANSLIT", $e->text);
 			}else{
 				$res .= $e->text;
