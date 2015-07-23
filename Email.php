@@ -393,8 +393,9 @@ class Email{
 		}else if($msg->type == 1 && $msg->subtype == "ALTERNATIVE" && isset($msg->parts)){
 			$i=0;
 			
-			$selectedSection == null;
+			$selectedSection = null;
 			$selectedPart = null;
+			
 			
 			foreach($msg->parts as $part){
 					
@@ -409,12 +410,10 @@ class Email{
 			
 				}
 					
-				if($part->type==0){
+				if($part->type==0 && $part->subtype==$subtype){
 					$selectedSection = $currentSection;
 					$selectedPart = $part;
-					if($part->subtype==$subtype){
-						break;
-					}
+					break;
 				}
 					
 			}
@@ -428,6 +427,7 @@ class Email{
 					return $res;
 				}
 			}else{
+				$i=0;
 				foreach($msg->parts as $part){
 						
 					$i++;
@@ -440,13 +440,37 @@ class Email{
 						$currentSection=$section.".".$i;
 							
 					}
+					
+					if($part->type == 1){
 						
-					$res = $this->recurs_getBody($subtype, $part, $currentSection);
-			
+						$res = $this->recurs_getBody($subtype, $part, $currentSection);
+						
+					}
 					if(($res != null)){
 						return $res;
 					}
 						
+				}
+				if($subtype == "HTML"){
+					$i=0;
+					foreach($msg->parts as $part){
+							
+						$i++;
+						if($section == ""){
+								
+							$currentSection=$i;
+								
+						}else{
+					
+							$currentSection=$section.".".$i;
+								
+						}
+							
+						if($part->type==0) {
+							return $this->recurs_getBody($subtype, $part, $currentSection);
+						}
+							
+					}
 				}
 			}
 			
@@ -548,7 +572,9 @@ class Email{
 		}else{
 			 
 			if($msg->type==0 && !($msg->subtype == "HTML" && $subtype == "PLAIN")){
-				
+				if($section == ""){
+					$section=1;
+				}
 				$sectionDescriptor=array();
 				
 				if($msg->ifparameters == 1 ){
@@ -561,13 +587,15 @@ class Email{
 				
 				$sectionDescriptor["encoding"]=$msg->encoding;
 				$sectionDescriptor["section"]=$section;
-				print_r($sectionDescriptor);
+				//print_r($sectionDescriptor);exit;
 				$body=$this->getSectionContent($sectionDescriptor);
-				
+				//echo $body; exit;
 				$this->bodySize = $msg->bytes;
 				if($msg->subtype == "HTML"){
+					//echo "sono quaaaaaa";
 					$body=$this->getImagesFromHTML($body);
 				}
+				//echo $body;
 				return $body;
 			}
 			
