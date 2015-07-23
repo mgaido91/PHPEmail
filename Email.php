@@ -534,7 +534,9 @@ class Email{
 						
 						$s=$this->getSectionContent($sectionDescriptor);
 						
-						$s=$this->getImagesFromHTML($s);
+						if($part->subtype == "HTML" ){
+							$s=$this->getImagesFromHTML($s);
+						}
 						$result.=$s;
 					}
 				}elseif($part->type == 5 && $part->ifdisposition == 1 && $part->disposition == "inline" && $subtype == "HTML"){
