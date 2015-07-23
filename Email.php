@@ -174,7 +174,7 @@ class Email{
 	
 	public function getSectionContent($sectionDescriptor){
 		
-		$content = $this->imapServer->getContent($this->index, $sectionDescriptor["section"]);
+		$content = Email::decodeContent($this->imapServer->getContent($this->index, $sectionDescriptor["section"]), $sectionDescriptor["encoding"]);
 		
 		if(isset($sectionDescriptor["charset"]) && $sectionDescriptor["charset"]!=null &&$sectionDescriptor["charset"]!="default"){
 
@@ -182,7 +182,7 @@ class Email{
 
 		}
 		
-		return Email::decodeContent($content, $sectionDescriptor["encoding"]);
+		return $content;
 		
 	}
 	
